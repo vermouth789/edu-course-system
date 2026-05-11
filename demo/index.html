@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduSpark Demo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <section class="login-screen" id="login-screen">
+      <div class="login-panel">
+        <div>
+          <p class="eyebrow">EduSpark</p>
+          <h1>课程管理系统登录</h1>
+          <p class="muted">请使用账号密码登录，系统会根据账号角色进入对应端口。</p>
+        </div>
+
+        <div class="login-form">
+          <label class="form-label" for="login-account">账号</label>
+          <input id="login-account" type="text" value="student001" />
+
+          <label class="form-label" for="login-password">密码</label>
+          <input id="login-password" type="password" value="123456" />
+        </div>
+
+        <div class="login-grid">
+          <button class="login-role-card active" data-login-role="student">
+            <span>学生端</span>
+            <strong>学习、问答、绘图、提交报告</strong>
+          </button>
+          <button class="login-role-card" data-login-role="teacher">
+            <span>教师端</span>
+            <strong>课程管理、任务发布、报告评阅</strong>
+          </button>
+          <button class="login-role-card" data-login-role="admin">
+            <span>管理员端</span>
+            <strong>账号权限、标准库、系统配置</strong>
+          </button>
+        </div>
+
+        <div class="login-note">
+          <span class="badge">Auth</span>
+          <p id="login-status">当前为演示账号，正式版将接入 JWT / Session、RBAC 权限、首次登录问卷状态和课程班级绑定。</p>
+        </div>
+
+        <button class="primary-btn login-submit" id="login-submit-btn">登录</button>
+      </div>
+    </section>
+
+    <div class="page-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">E</span>
+          <div>
+            <h1>EduSpark</h1>
+            <p>电路电子课程平台 Demo</p>
+          </div>
+        </div>
+
+        <div class="identity-card">
+          <p class="card-label">当前身份</p>
+          <h2 id="current-role-name">学生端</h2>
+          <p class="muted" id="current-role-desc">学习、问答、绘图、提交报告</p>
+          <button class="role-button logout-button" id="logout-button">退出登录</button>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item active" data-panel="dashboard" data-roles="student,teacher,admin">课程总览</button>
+          <button class="nav-item" data-panel="course" data-roles="student,teacher">章节学习</button>
+          <button class="nav-item" data-panel="quiz" data-roles="student,teacher">章节抽题</button>
+          <button class="nav-item" data-panel="assistant" data-roles="student,teacher">AI 教师</button>
+          <button class="nav-item" data-panel="onboarding" data-roles="student">首次问卷</button>
+          <button class="nav-item" data-panel="personalized" data-roles="teacher">学生画像</button>
+          <button class="nav-item" data-panel="report" data-roles="student,teacher">工程报告</button>
+          <button class="nav-item" data-panel="circuit" data-roles="student,teacher">电路绘图</button>
+          <button class="nav-item" data-panel="admin" data-roles="admin">系统管理</button>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <section id="dashboard" class="panel active">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Dashboard</p>
+              <h3>课程与教学概览</h3>
+            </div>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card course-card">
+              <div class="card-top">
+                <div>
+                  <p class="card-label">当前端口</p>
+                  <h4 id="role-title">学生端 · 电路电子学习空间</h4>
+                </div>
+                <span class="badge" id="role-badge">Student</span>
+              </div>
+              <p class="muted" id="role-summary">
+                学生端聚焦章节学习、首次问卷、AI 教师、电路图绘制、工程报告提交和学习画像更新。
+              </p>
+              <div class="metric-row">
+                <div>
+                  <strong id="role-metric-a">68%</strong>
+                  <span id="role-label-a">章节完成率</span>
+                </div>
+                <div>
+                  <strong id="role-metric-b">24m</strong>
+                  <span id="role-label-b">今日学习</span>
+                </div>
+                <div>
+                  <strong id="role-metric-c">3</strong>
+                  <span id="role-label-c">待提交任务</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">端口核心功能</p>
+              <div class="chip-row" id="role-tags"></div>
+              <ul class="feature-list" id="role-features">
+                <li>首次登录问卷生成初始画像</li>
+                <li>章节学习正计时与学习轨迹记录</li>
+                <li>AI 教师按画像调整讲解方式</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="grid three-column">
+            <article class="card">
+              <p class="card-label">教学模块</p>
+              <ul class="feature-list">
+                <li>学生端：学习、作答、绘图、报告提交</li>
+                <li>教师端：课程、任务、题库、报告评阅</li>
+                <li>管理员端：账号、权限、课程标准与资源库</li>
+              </ul>
+            </article>
+            <article class="card">
+              <p class="card-label">AI 模块</p>
+              <ul class="feature-list">
+                <li>当前章节随机出题</li>
+                <li>主观题 AI 评分</li>
+                <li>课程知识库问答</li>
+                <li>错因分析与推荐</li>
+              </ul>
+            </article>
+            <article class="card">
+              <p class="card-label">底层服务</p>
+              <ul class="feature-list">
+                <li>PostgreSQL 管业务</li>
+                <li>Qdrant 管向量</li>
+                <li>Redis 管缓存与任务</li>
+                <li>本地文件存储可升级 MinIO</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="course" class="panel">
+          <div class="panel-header" id="course-list-header">
+            <div>
+              <p class="eyebrow">Course</p>
+              <h3>章节学习</h3>
+            </div>
+          </div>
+
+          <div id="course-list-view">
+            <div class="grid two-column">
+              <article class="card">
+                <p class="card-label">模块一点亮 LED</p>
+                <h4>直流驱动电路设计与运维</h4>
+                <p class="muted">请选择一个工程任务进入学习。进入后系统会开始记录学习时长，并保留任务学习轨迹。</p>
+              </article>
+
+              <article class="card">
+                <p class="card-label">学习进度</p>
+                <div class="metric-row">
+                  <div>
+                    <strong>5</strong>
+                    <span>工程任务</span>
+                  </div>
+                  <div>
+                    <strong id="course-total-time">00:00:00</strong>
+                    <span>累计学习</span>
+                  </div>
+                  <div>
+                    <strong>1</strong>
+                    <span>进行中</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <article class="card">
+              <p class="card-label">任务列表</p>
+              <div class="chapter-list" id="chapter-list"></div>
+            </article>
+          </div>
+
+          <div id="course-study-view" class="hidden-view">
+            <article class="card detail-card">
+              <div class="card-top">
+                <div>
+                  <p class="card-label">正在学习</p>
+                  <h4 id="chapter-title">模块一点亮 LED</h4>
+                </div>
+                <span class="badge" id="study-timer">00:00:00</span>
+              </div>
+              <p id="chapter-summary" class="muted">
+                围绕直流驱动电路设计与运维，完成需求分析、参数校核、电路设计、组装调试和工程文档输出。
+              </p>
+
+              <div class="study-toolbar">
+                <button class="chip tool-button secondary" id="study-start-btn">开始计时</button>
+                <button class="chip tool-button secondary" id="study-pause-btn">暂停</button>
+                <button class="chip tool-button secondary" id="study-reset-btn">重置</button>
+              </div>
+
+              <div class="split-grid">
+                <div class="split-block">
+                  <span class="small-tag">学习目标</span>
+                  <p id="coarse-chunk">
+                    掌握 LED 限流电阻计算、功率降额、万用表测量规范和基础故障诊断流程。
+                  </p>
+                </div>
+                <div class="split-block">
+                  <span class="small-tag">任务成果</span>
+                  <p id="fine-chunk">
+                    输出电路图、参数校核表、巡检记录、故障诊断单和工程技术备忘录。
+                  </p>
+                </div>
+              </div>
+
+              <div class="learning-detail-grid">
+                <div class="split-block">
+                  <span class="small-tag">资源</span>
+                  <ul class="compact-list" id="chapter-resources">
+                    <li>微课：万用表基础操作规范</li>
+                    <li>课件：LED 驱动电路设计</li>
+                    <li>样例：巡检记录表与技术备忘录</li>
+                  </ul>
+                </div>
+                <div class="split-block">
+                  <span class="small-tag">学习路径</span>
+                  <ul class="compact-list" id="chapter-path">
+                    <li>安全承诺</li>
+                    <li>需求分析</li>
+                    <li>电路绘图</li>
+                    <li>工程报告</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="lesson-workspace" id="lesson-workspace">
+                <p class="card-label">学习内容</p>
+                <h4 id="lesson-title">直流驱动电路设计与运维</h4>
+                <p class="muted" id="lesson-body">
+                  点击左侧任务卡进入学习。系统会记录学习时长、资源访问、任务完成状态，并把行为写入学生画像。
+                </p>
+                <div class="lesson-actions">
+                  <button class="primary-btn" id="lesson-ask-btn">向 AI 教师提问</button>
+                  <button class="chip tool-button secondary" id="lesson-draw-btn">打开电路绘图</button>
+                  <button class="chip tool-button secondary" id="lesson-report-btn">提交工程报告</button>
+                </div>
+              </div>
+
+              <div class="card-foot">
+                <button class="chip tool-button secondary" id="back-to-course-list">返回任务列表</button>
+                <button class="primary-btn" id="jump-quiz">根据本章出题</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="quiz" class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Quiz</p>
+              <h3>当前章节随机出题与 AI 评分</h3>
+            </div>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <div class="card-top">
+                <div>
+                  <p class="card-label">出题规则</p>
+                  <h4>第 3 章 栈与队列</h4>
+                </div>
+                <span class="badge">随机生成</span>
+              </div>
+              <ul class="feature-list">
+                <li>单选题 2 道，基础概念优先</li>
+                <li>判断题 1 道，数据结构特性对比</li>
+                <li>简答题 1 道，考察队列应用场景</li>
+              </ul>
+
+              <div class="question-box">
+                <p class="question-type">简答题</p>
+                <h5>请说明栈和队列在访问顺序上的本质区别，并举一个实际应用例子。</h5>
+                <textarea id="answer-input" placeholder="在这里输入学生作答内容..."></textarea>
+                <button class="primary-btn" id="score-answer">AI 评分演示</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">评分结果</p>
+              <div class="score-box" id="score-box">
+                <div class="score-pill">等待作答</div>
+                <p class="muted">提交答案后，这里会展示 rubric 评分、得分点、失分点和改进建议。</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="assistant" class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Assistant</p>
+              <h3>AI 教师问答</h3>
+            </div>
+          </div>
+
+          <div class="grid two-column assistant-grid">
+            <article class="card">
+              <p class="card-label">常见提问</p>
+              <div class="prompt-list">
+                <button class="prompt-item" data-question="为什么栈适合做括号匹配？">为什么栈适合做括号匹配？</button>
+                <button class="prompt-item" data-question="队列和广度优先搜索有什么关系？">队列和广度优先搜索有什么关系？</button>
+                <button class="prompt-item" data-question="顺序栈和链栈在实际使用时怎么选？">顺序栈和链栈在实际使用时怎么选？</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">课程私有知识库回答</p>
+              <div class="chat-box" id="chat-box">
+                <div class="chat-message teacher">
+                  我会优先基于当前课程、当前章节和命中的知识片段来回答，避免泛泛而谈。
+                </div>
+              </div>
+              <div class="chat-input-row">
+                <input id="question-input" type="text" placeholder="输入一个课程问题..." />
+                <button class="primary-btn" id="ask-button">提问</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="onboarding" class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Onboarding</p>
+              <h3>首次登录问卷与初始学生画像</h3>
+            </div>
+            <span class="badge" id="onboarding-required-badge">首次登录必填</span>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">首次登录基础问卷</p>
+              <div class="report-form">
+                <label class="form-label" for="foundation-select">你现在对电路电子基础的自我判断</label>
+                <select id="foundation-select" class="demo-select">
+                  <option value="weak">基础较弱，需要慢一点</option>
+                  <option value="mid" selected>基础一般，边学边练</option>
+                  <option value="strong">基础较好，希望更深入</option>
+                </select>
+
+                <label class="form-label" for="age-input">年龄</label>
+                <input id="age-input" type="number" min="12" max="80" value="19" />
+
+                <label class="form-label" for="grade-select">当前年级 / 学段</label>
+                <select id="grade-select" class="demo-select">
+                  <option value="freshman">大一 / 入门阶段</option>
+                  <option value="sophomore" selected>大二 / 专业基础阶段</option>
+                  <option value="junior">大三 / 专业深化阶段</option>
+                  <option value="vocational">高职 / 项目实践阶段</option>
+                </select>
+
+                <label class="form-label" for="hands-on-select">实操经验</label>
+                <select id="hands-on-select" class="demo-select">
+                  <option value="none">几乎没有实操经验</option>
+                  <option value="basic" selected>做过基础面包板实验</option>
+                  <option value="skilled">能独立使用万用表和常见元件</option>
+                </select>
+
+                <label class="form-label" for="style-select">你更喜欢哪种讲解方式</label>
+                <select id="style-select" class="demo-select">
+                  <option value="stepwise" selected>分步骤拆解</option>
+                  <option value="example">先举例再解释</option>
+                  <option value="rigorous">公式和原理推导</option>
+                </select>
+
+                <label class="form-label" for="practice-select">你希望练习题难度更偏向</label>
+                <select id="practice-select" class="demo-select">
+                  <option value="solid" selected>先巩固基础</option>
+                  <option value="balanced">难度平衡</option>
+                  <option value="challenge">希望挑战更高难度</option>
+                </select>
+
+                <label class="form-label" for="goal-select">你当前最想解决的问题</label>
+                <select id="goal-select" class="demo-select">
+                  <option value="concept" selected>先把概念听明白</option>
+                  <option value="calculation">提高计算题正确率</option>
+                  <option value="diagram">学会画电路图并检查连接</option>
+                </select>
+
+                <div class="chip-row tool-row">
+                  <button class="chip tool-button secondary" id="generate-profile-btn">提交问卷并生成画像</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">生成的初始画像</p>
+              <div class="score-box" id="initial-profile-box">
+                <div class="score-pill">等待生成</div>
+                <p class="muted">学生首次登录时先通过基础问卷生成一个模糊画像，后续再结合对话、作答、报告和学习进度持续修正。</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">画像更新机制</p>
+              <ul class="feature-list">
+                <li>首次登录问卷：生成初始偏好和基础水平标签</li>
+                <li>AI 对话过程：识别学生偏好的讲解方式和追问深度</li>
+                <li>章节练习与评分：修正掌握度、难度适配和薄弱点</li>
+                <li>工程报告与电路图：补充实践能力和表达特点</li>
+              </ul>
+            </article>
+            <article class="card">
+              <p class="card-label">汇报重点</p>
+              <ul class="feature-list">
+                <li>画像不是一次性固定标签，而是动态更新的</li>
+                <li>初始画像只做模糊分层，避免第一次就贴死标签</li>
+                <li>后续 Teacher Agent 会基于更新后的画像做因材施教</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="personalized" class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Personalized</p>
+              <h3>个性化 Teacher Agent 演示</h3>
+            </div>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">学生画像切换</p>
+              <div class="profile-list" id="profile-list"></div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">当前画像</p>
+              <h4 id="profile-name">学生 A · 基础薄弱型</h4>
+              <p id="profile-summary" class="muted">
+                当前学习到电路基础分析章节，喜欢步骤化讲解，遇到综合题时容易跳步。
+              </p>
+              <div class="chip-row" id="profile-tags"></div>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">学生端看到的老师回答</p>
+              <div class="teacher-style-box">
+                <p class="question-type">同一问题</p>
+                <h5>“为什么这个电阻两端电压可以用欧姆定律求？”</h5>
+                <div class="chat-box">
+                  <div class="chat-message teacher" id="personalized-answer">
+                    先别急着套公式，我们一步一步看。只要这段支路里电阻的电流和阻值明确，根据欧姆定律 `U = IR` 就能求电压。你可以先确认这只电阻有没有和别的元件构成复杂支路。
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">老师端学习报告预览</p>
+              <div class="report-box">
+                <div class="metric-row">
+                  <div>
+                    <strong id="report-progress">61%</strong>
+                    <span>章节完成率</span>
+                  </div>
+                  <div>
+                    <strong id="report-accuracy">58%</strong>
+                    <span>章节正确率</span>
+                  </div>
+                  <div>
+                    <strong id="report-activity">高</strong>
+                    <span>对话活跃度</span>
+                  </div>
+                </div>
+                <ul class="feature-list" id="report-points"></ul>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">老师 Agent 适配逻辑</p>
+              <ul class="feature-list">
+                <li>统一老师身份不变，变化的是解释风格和练习策略</li>
+                <li>先用首次登录问卷生成模糊画像，再结合学习进度、作答情况、对话摘要持续修正</li>
+                <li>根据画像动态调整回答形式、难度和鼓励方式</li>
+              </ul>
+            </article>
+            <article class="card">
+              <p class="card-label">汇报重点</p>
+              <ul class="feature-list">
+                <li>学生端体验到的是因材施教，不是单一模板回答</li>
+                <li>老师端得到的是学习报告，不只是冷冰冰的分数</li>
+                <li>这套能力和题库、RAG、评分系统可以联动</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="report" class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Report</p>
+              <h3>工程报告提交模块</h3>
+            </div>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">报告模板</p>
+              <div class="profile-list" id="report-template-list"></div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">模板说明</p>
+              <h4 id="report-template-title">LED 驱动电路优化技术备忘录</h4>
+              <p id="report-template-summary" class="muted">
+                面向模块一任务五，要求学生输出完整的设计背景、参数校核、元器件选型和工况优化结论。
+              </p>
+              <div class="chip-row" id="report-template-tags"></div>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">学生提交页预览</p>
+              <div class="report-form">
+                <label class="form-label">报告标题</label>
+                <input id="report-title-input" type="text" value="LED 驱动电路优化技术备忘录" />
+
+                <label class="form-label">关联任务</label>
+                <input id="report-task-input" type="text" value="任务五 · 工况优化与工程文档输出" />
+
+                <label class="form-label">核心内容</label>
+                <textarea id="report-body-input">项目背景：焊装车间 PLC 控制柜 LED 指示灯频繁出现烧毁、频闪和限流电阻发热问题。
+
+参数校核：以 5V 电源、LED 正向压降 2V 为基础，计算限流电阻并完成功率降额校核。
+
+选型结论：优先采用 330Ω 1/2W 电阻方案，在宽温环境下保留足够设计余量。
+
+运维建议：建立每周巡检表，重点记录亮度、电阻温升与异常现象。</textarea>
+
+                <div class="upload-box">
+                  <p class="question-type">附件区</p>
+                  <ul class="feature-list">
+                    <li>电路图文件：`circuit-diagram.svg`</li>
+                    <li>测量记录表：`measurement-log.xlsx`</li>
+                    <li>现场照片：`2` 张</li>
+                  </ul>
+                </div>
+
+                <div class="chip-row tool-row">
+                  <button class="chip tool-button secondary" id="report-save-btn">保存草稿</button>
+                  <button class="chip tool-button secondary" id="report-submit-btn">正式提交</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">AI 初评摘要</p>
+              <div class="score-box" id="report-ai-box">
+                <div class="score-pill">待提交</div>
+                <p class="muted">提交后，这里会展示 AI 对报告完整性、参数准确性和工程规范性的初步摘要。</p>
+              </div>
+
+              <div class="report-box">
+                <p class="card-label">教师端可见信息</p>
+                <ul class="feature-list">
+                  <li>报告状态：草稿 / 已提交 / 已评阅</li>
+                  <li>结构化内容摘要</li>
+                  <li>AI 初评结论</li>
+                  <li>教师评分与评语</li>
+                  <li>归档到学生成果履历</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">适合样章的成果物</p>
+              <ul class="feature-list">
+                <li>技术备忘录</li>
+                <li>巡检记录表</li>
+                <li>故障诊断单</li>
+                <li>运维方案</li>
+                <li>个人工程履历</li>
+              </ul>
+            </article>
+            <article class="card">
+              <p class="card-label">展示要点</p>
+              <ul class="feature-list">
+                <li>不是简单上传附件，而是模板化工程成果提交</li>
+                <li>能和电路图、章节任务、AI 评阅联动</li>
+                <li>最终能沉淀成学生的工程能力档案</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="circuit" class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Circuit</p>
+              <h3>学生端电路图编辑器</h3>
+            </div>
+          </div>
+
+          <div class="grid two-column circuit-layout">
+            <article class="card">
+              <p class="card-label">绘图工具</p>
+              <div class="standard-notice">
+                <p class="question-type">当前标准提示</p>
+                <p class="muted">正式版按“IEC 60617 标准来源 + 本地结构化元件库”建设。当前 demo 展示教学常用元件、端子、接头、线材类型和基础连通性检查。</p>
+              </div>
+
+              <div class="tool-section">
+                <p class="tool-title">添加元件</p>
+                <div class="chip-row tool-row">
+                  <button class="chip tool-button" data-component="source">电源</button>
+                  <button class="chip tool-button" data-component="acSource">交流源</button>
+                  <button class="chip tool-button" data-component="resistor">电阻</button>
+                  <button class="chip tool-button" data-component="diode">二极管</button>
+                  <button class="chip tool-button" data-component="led">LED</button>
+                  <button class="chip tool-button" data-component="capacitor">电容</button>
+                  <button class="chip tool-button" data-component="inductor">电感</button>
+                  <button class="chip tool-button" data-component="switch">开关</button>
+                  <button class="chip tool-button" data-component="fuse">熔断器</button>
+                  <button class="chip tool-button" data-component="terminal">端子排</button>
+                  <button class="chip tool-button" data-component="connector">插接件</button>
+                  <button class="chip tool-button" data-component="junction">接茬点</button>
+                  <button class="chip tool-button" data-component="lamp">指示灯</button>
+                  <button class="chip tool-button" data-component="ground">接地</button>
+                </div>
+              </div>
+
+              <div class="tool-section">
+                <p class="tool-title">线材与接口</p>
+                <label class="form-label" for="wire-type-select">连接线类型</label>
+                <select id="wire-type-select" class="demo-select">
+                  <option value="signal">信号线 0.5mm² 蓝色</option>
+                  <option value="power" selected>电源线 0.75mm² 红色</option>
+                  <option value="ground">接地线 0.75mm² 黄绿</option>
+                  <option value="shielded">屏蔽线 0.5mm² 灰色</option>
+                </select>
+
+                <label class="form-label" for="joint-type-select">接口接茬方式</label>
+                <select id="joint-type-select" class="demo-select">
+                  <option value="terminal" selected>端子压接</option>
+                  <option value="plug">插接件</option>
+                  <option value="solder">焊接接茬</option>
+                  <option value="twist">临时绞接</option>
+                </select>
+              </div>
+
+              <div class="tool-section">
+                <p class="tool-title">编辑操作</p>
+                <div class="chip-row tool-row">
+                  <button class="chip tool-button secondary" id="wire-mode-btn">开始连线</button>
+                  <button class="chip tool-button secondary" id="check-connectivity-btn">检查连通性</button>
+                  <button class="chip tool-button secondary" id="delete-selected-btn">删除选中</button>
+                  <button class="chip tool-button secondary" id="clear-diagram-btn">清空画布</button>
+                </div>
+              </div>
+
+              <div class="tool-section">
+                <p class="tool-title">下载提交</p>
+                <div class="chip-row tool-row">
+                  <button class="chip tool-button secondary" id="download-svg-btn">下载 SVG</button>
+                  <button class="chip tool-button secondary" id="download-png-btn">下载 PNG</button>
+                </div>
+              </div>
+
+              <div class="score-box" id="circuit-status-box">
+                <div class="score-pill">编辑说明</div>
+                <p class="muted">
+                  当前 demo 采用 IEC 60617 导向的常用电气符号子集。先点元件按钮自动放入画布，再点击元件引脚完成连线。导出时会生成适合实验报告或作业提交的图像。
+                </p>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-top">
+                <div>
+                  <p class="card-label">电路画布</p>
+                  <h4>基础直流回路示例</h4>
+                </div>
+                <span class="badge" id="circuit-mode-indicator">普通模式</span>
+              </div>
+              <div class="circuit-board-shell">
+                <svg id="circuit-canvas" class="circuit-canvas" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" aria-label="circuit editor canvas">
+                  <defs>
+                    <pattern id="grid-pattern" width="24" height="24" patternUnits="userSpaceOnUse">
+                      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(92,74,48,0.08)" stroke-width="1"></path>
+                    </pattern>
+                  </defs>
+                  <rect x="0" y="0" width="900" height="520" fill="url(#grid-pattern)"></rect>
+                  <g id="circuit-wires"></g>
+                  <g id="circuit-components"></g>
+                </svg>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">功能说明</p>
+              <ul class="feature-list">
+                <li>当前 demo 使用原生 SVG 实现，便于快速展示</li>
+                <li>图形风格按 IEC 60617 常用符号子集对齐，正式版再接完整元件库</li>
+                <li>可对当前图纸做基础连通性检查，识别开路、悬空端子和未闭环问题</li>
+                <li>正式版将升级为 `Next.js + React Flow` 的节点式电路编辑器</li>
+                <li>当前 demo 已展示第一批常用元件库：电源、电阻、二极管、LED、电容、电感、开关、接地</li>
+                <li>学生提交时建议同时保存 `diagram_json + preview_image`</li>
+              </ul>
+            </article>
+            <article class="card">
+              <p class="card-label">适用课程场景</p>
+              <ul class="feature-list">
+                <li>电路电子章节练习</li>
+                <li>实验报告配图</li>
+                <li>作业中的电路设计题</li>
+                <li>后续 AI 电路结构分析、连通性校验和辅助评分</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+
+        <section id="admin" class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Admin</p>
+              <h3>系统管理与 RAG 配置</h3>
+            </div>
+            <span class="badge">RBAC / RAG / Audit</span>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">账号与角色权限</p>
+              <h4>三端身份认证与授权</h4>
+              <p class="muted">正式版建议采用账号密码 + 角色权限 + 班级/课程范围绑定。管理员可统一维护学生、教师、课程负责人和系统运维账号。</p>
+              <div class="permission-grid">
+                <label><input type="checkbox" checked> 学生端：章节学习、AI 问答、绘图下载、工程报告提交</label>
+                <label><input type="checkbox" checked> 教师端：课程维护、任务发布、题库管理、报告评阅</label>
+                <label><input type="checkbox" checked> 教师端：查看学生画像与生成学习报告</label>
+                <label><input type="checkbox" checked> 管理员端：账号、角色、课程标准、RAG 配置管理</label>
+                <label><input type="checkbox"> 高风险操作二次确认：删除课程、重建向量库、切换生产模型</label>
+              </div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">权限矩阵</p>
+              <div class="admin-matrix">
+                <div><strong>学生</strong><span>学习 / 作答 / 绘图 / 提交</span></div>
+                <div><strong>教师</strong><span>发布 / 评阅 / 干预 / 报告</span></div>
+                <div><strong>管理员</strong><span>授权 / 配置 / 审计 / 资源库</span></div>
+              </div>
+              <p class="muted">后端落库时会拆成 `roles`、`permissions`、`user_role_bindings`、`course_scope_bindings`，避免只靠前端隐藏菜单。</p>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card admin-config-card">
+              <p class="card-label">RAG 数据库调节</p>
+              <h4>精准检索 + 向量检索混合策略</h4>
+              <div class="form-grid compact-form">
+                <label>知识库集合
+                  <input id="admin-rag-collection" value="circuit-electronics-m1">
+                </label>
+                <label>召回数量 Top K
+                  <input id="admin-top-k" type="number" min="1" max="20" value="6">
+                </label>
+                <label>精准检索权重
+                  <input id="admin-keyword-weight" type="number" min="0" max="1" step="0.1" value="0.4">
+                </label>
+                <label>向量检索权重
+                  <input id="admin-vector-weight" type="number" min="0" max="1" step="0.1" value="0.6">
+                </label>
+                <label>重排序策略
+                  <select id="admin-rerank">
+                    <option value="chapter-first">章节优先 + 相似度排序</option>
+                    <option value="hybrid-score">混合分数排序</option>
+                    <option value="teacher-curated">教师精选优先</option>
+                  </select>
+                </label>
+                <label>切片大小
+                  <input id="admin-chunk-size" type="number" min="200" max="2000" step="50" value="800">
+                </label>
+                <label>切片重叠
+                  <input id="admin-chunk-overlap" type="number" min="0" max="400" step="20" value="120">
+                </label>
+              </div>
+              <button class="primary-btn" id="save-admin-config">保存配置预览</button>
+            </article>
+
+            <article class="card admin-config-card">
+              <p class="card-label">模型与智能教师</p>
+              <h4>LLM 与 Embedding 分开配置</h4>
+              <div class="form-grid compact-form">
+                <label>教师 Agent 模型
+                  <input id="admin-llm-model" value="LongCat-Flash-Thinking-2601">
+                </label>
+                <label>向量化模型
+                  <input id="admin-embedding-model" value="text-embedding-3-small">
+                </label>
+                <label>回答温度
+                  <input id="admin-temperature" type="number" min="0" max="1" step="0.1" value="0.3">
+                </label>
+              </div>
+              <div class="score-box" id="admin-config-preview">
+                <div class="score-pill">当前配置预览</div>
+                <p class="muted">知识库 `circuit-electronics-m1`：Top K=6，精准 0.4，向量 0.6，章节优先重排。正式版会写入配置表并进入审计日志。</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">RAG 运维操作</p>
+              <div class="chip-row tool-row">
+                <button class="chip tool-button secondary">查看切片样本</button>
+                <button class="chip tool-button secondary">重建当前课程索引</button>
+                <button class="chip tool-button secondary">回滚上一版索引</button>
+                <button class="chip tool-button secondary">导出检索评测</button>
+              </div>
+              <ul class="feature-list">
+                <li>支持按课程、章节、任务、资源来源筛选向量库</li>
+                <li>支持调整 Top K、权重、重排序、切片大小和重叠范围</li>
+                <li>支持记录每次 AI 教师回答命中的知识块和评分证据</li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <p class="card-label">系统审计</p>
+              <div class="audit-list">
+                <div><strong>09:20</strong><span>teacher001 发布模块一工程报告模板</span></div>
+                <div><strong>09:42</strong><span>admin001 调整 Top K 从 5 改为 6</span></div>
+                <div><strong>10:05</strong><span>student001 下载 LED 驱动电路 SVG</span></div>
+                <div><strong>10:18</strong><span>AI 教师回答命中 4 个章节知识块</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <script src="./app.js?v=20260511-admin-rag"></script>
+  </body>
+</html>
