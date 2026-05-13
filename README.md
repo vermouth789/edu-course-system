@@ -10,12 +10,15 @@
 当前仓库先提供两部分内容：
 
 1. `demo/`
-   一个零依赖可预览的静态原型，方便快速看产品方向。
+   早期展示原型，后续除非明确要求，不再作为正式开发入口。
 
 2. `backend/`
    一个面向正式版的 `FastAPI` 代码骨架，包含课程、章节、章节抽题、AI 教师问答等示例接口。
 
-3. `docs/`
+3. `frontend/`
+   正式前端起步版本，已经区分学生端、教师端和管理员端功能。
+
+4. `docs/`
    包含 API、RAG 设计和系统架构图说明。
 
 ## 先看 Demo
@@ -32,10 +35,25 @@ python3 -m http.server 8080
 http://localhost:8080/demo/
 ```
 
+## 正式前端
+
+正式开发入口在 `frontend/`，目前先用零依赖前端跑通三端功能和后端接口，后续再迁移到 `Next.js`。
+
+```bash
+python3 -m http.server 5173 --directory frontend
+```
+
+打开：
+
+```text
+http://127.0.0.1:5173/
+```
+
 ## 项目结构
 
 ```text
 demo/                  前端静态原型
+frontend/              正式前端起步版本
 backend/               FastAPI 后端骨架
 docs/                  架构与 RAG 方案说明
 ```
@@ -77,10 +95,11 @@ docs/                  架构与 RAG 方案说明
 - 电路图模块增加线材选用、接口接茬、端子排、插接件和更多常用元件
 - 管理员端增加角色权限控制、RAG 数据库参数调节、模型配置预览和系统审计展示
 - RAG 管理支持 Top K、精准/向量权重、重排序、切片大小与切片重叠等参数
+- 后端开始接入 `SQLAlchemy + PostgreSQL`，新增用户、课程、选课、学生画像、工程报告和 RAG 配置表
+- 教师端新增学生管理与班级学情页面，可同步 PostgreSQL 中的学生画像和报告数据
 
 ## 下一步
 
-- 安装 `FastAPI`、`uvicorn`、`qdrant-client`
-- 接入真实 `PostgreSQL`
+- 启动本机 `PostgreSQL` 并创建 `eduspark` 数据库
 - 接入真实 `Qdrant`
 - 用 `Next.js` 重建正式前端

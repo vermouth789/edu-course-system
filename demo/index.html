@@ -70,6 +70,7 @@
           <button class="nav-item" data-panel="quiz" data-roles="student,teacher">章节抽题</button>
           <button class="nav-item" data-panel="assistant" data-roles="student,teacher">AI 教师</button>
           <button class="nav-item" data-panel="onboarding" data-roles="student">首次问卷</button>
+          <button class="nav-item" data-panel="teacher-students" data-roles="teacher">学生管理</button>
           <button class="nav-item" data-panel="personalized" data-roles="teacher">学生画像</button>
           <button class="nav-item" data-panel="report" data-roles="student,teacher">工程报告</button>
           <button class="nav-item" data-panel="circuit" data-roles="student,teacher">电路绘图</button>
@@ -435,6 +436,83 @@
                 <li>画像不是一次性固定标签，而是动态更新的</li>
                 <li>初始画像只做模糊分层，避免第一次就贴死标签</li>
                 <li>后续 Teacher Agent 会基于更新后的画像做因材施教</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+
+        <section id="teacher-students" class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Teacher</p>
+              <h3>学生管理与班级学情</h3>
+            </div>
+            <button class="primary-btn" id="sync-teacher-db-btn">从 PostgreSQL 同步</button>
+          </div>
+
+          <div class="grid four-column teacher-stat-grid">
+            <article class="card stat-card">
+              <p class="card-label">学生数</p>
+              <strong id="teacher-student-count">3</strong>
+              <span class="muted">当前课程</span>
+            </article>
+            <article class="card stat-card">
+              <p class="card-label">平均进度</p>
+              <strong id="teacher-avg-progress">76%</strong>
+              <span class="muted">章节完成</span>
+            </article>
+            <article class="card stat-card">
+              <p class="card-label">平均正确率</p>
+              <strong id="teacher-avg-accuracy">73%</strong>
+              <span class="muted">章节练习</span>
+            </article>
+            <article class="card stat-card">
+              <p class="card-label">需关注</p>
+              <strong id="teacher-risk-count">1</strong>
+              <span class="muted">风险学生</span>
+            </article>
+          </div>
+
+          <div class="grid two-column teacher-management-grid">
+            <article class="card">
+              <div class="card-top">
+                <div>
+                  <p class="card-label">学生列表</p>
+                  <h4>电气 2401 / 2402</h4>
+                </div>
+                <span class="badge">画像驱动</span>
+              </div>
+              <div class="student-table" id="teacher-student-table"></div>
+            </article>
+
+            <article class="card">
+              <p class="card-label">当前学生详情</p>
+              <h4 id="teacher-student-name">林同学</h4>
+              <p class="muted" id="teacher-student-summary">基础薄弱，适合步骤化、鼓励型讲解。</p>
+              <div class="chip-row" id="teacher-student-tags"></div>
+              <div class="score-box teacher-detail-box" id="teacher-student-detail">
+                <div class="score-pill">干预建议</div>
+                <p class="muted">建议安排串并联分析的低难度变式训练，并要求补充计算单位和参考方向。</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid two-column">
+            <article class="card">
+              <p class="card-label">工程报告待办</p>
+              <div class="audit-list" id="teacher-report-list">
+                <div><strong>林同学</strong><span>AI 初评 72，待教师复核</span></div>
+                <div><strong>周同学</strong><span>AI 初评 84，报告复核中</span></div>
+              </div>
+            </article>
+            <article class="card">
+              <p class="card-label">教师端专属能力</p>
+              <ul class="feature-list">
+                <li>按班级查看学生画像、进度、正确率和风险等级</li>
+                <li>查看 AI 教师对学生的中长期记忆摘要</li>
+                <li>复核 AI 评分，生成学习报告和干预建议</li>
+                <li>后端接口已预留 PostgreSQL 学生、画像、报告和 RAG 配置表</li>
               </ul>
             </article>
           </div>
@@ -870,6 +948,6 @@
       </main>
     </div>
 
-    <script src="./app.js?v=20260511-admin-rag"></script>
+    <script src="./app.js?v=20260513-postgres-teacher"></script>
   </body>
 </html>

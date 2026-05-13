@@ -140,6 +140,17 @@ const reportBodyInput = document.getElementById("report-body-input");
 const reportSaveButton = document.getElementById("report-save-btn");
 const reportSubmitButton = document.getElementById("report-submit-btn");
 const reportAiBox = document.getElementById("report-ai-box");
+const syncTeacherDbButton = document.getElementById("sync-teacher-db-btn");
+const teacherStudentCount = document.getElementById("teacher-student-count");
+const teacherAvgProgress = document.getElementById("teacher-avg-progress");
+const teacherAvgAccuracy = document.getElementById("teacher-avg-accuracy");
+const teacherRiskCount = document.getElementById("teacher-risk-count");
+const teacherStudentTable = document.getElementById("teacher-student-table");
+const teacherStudentName = document.getElementById("teacher-student-name");
+const teacherStudentSummary = document.getElementById("teacher-student-summary");
+const teacherStudentTags = document.getElementById("teacher-student-tags");
+const teacherStudentDetail = document.getElementById("teacher-student-detail");
+const teacherReportList = document.getElementById("teacher-report-list");
 const foundationSelect = document.getElementById("foundation-select");
 const ageInput = document.getElementById("age-input");
 const gradeSelect = document.getElementById("grade-select");
@@ -287,6 +298,49 @@ const studentProfiles = [
   }
 ];
 let activeProfileId = "student-a";
+let activeTeacherStudentId = "student-a";
+let teacherStudents = [
+  {
+    id: "student-a",
+    name: "林同学",
+    className: "电气 2401",
+    progress: 0.61,
+    accuracy: 0.58,
+    activity: "高",
+    risk: "需关注",
+    tags: ["基础薄弱", "步骤化", "鼓励型"],
+    summary: "基础薄弱，适合步骤化、鼓励型讲解。",
+    advice: "建议安排串并联分析的低难度变式训练，并要求补充计算单位和参考方向。"
+  },
+  {
+    id: "student-b",
+    name: "周同学",
+    className: "电气 2401",
+    progress: 0.78,
+    accuracy: 0.74,
+    activity: "中",
+    risk: "正常",
+    tags: ["基础稳定", "概念+例题", "平衡型"],
+    summary: "理解较稳，适合中等难度练习和工程情境题。",
+    advice: "建议增加节点电压法与复杂支路分析题，保持稳定提升。"
+  },
+  {
+    id: "student-c",
+    name: "陈同学",
+    className: "电气 2402",
+    progress: 0.89,
+    accuracy: 0.86,
+    activity: "中高",
+    risk: "优秀",
+    tags: ["进阶推导", "严谨型", "挑战题"],
+    summary: "理解能力较强，适合推导型讲解和挑战题。",
+    advice: "建议加入戴维南等效、复杂网络分析和工程表达训练。"
+  }
+];
+let teacherReports = [
+  { studentName: "林同学", status: "AI 初评 72，待教师复核" },
+  { studentName: "周同学", status: "AI 初评 84，报告复核中" }
+];
 const reportTemplates = [
   {
     id: "memo",
@@ -565,6 +619,101 @@ function updateProfileView() {
   reportActivity.textContent = profile.activity;
   reportPoints.innerHTML = profile.reportPoints.map((item) => `<li>${item}</li>`).join("");
   renderProfiles();
+}
+
+function percent(value) {
+  return `${Math.round(value * 100)}%`;
+}
+
+function renderTeacherOverview() {
+  const count = teacherStudents.length;
+  const avgProgress = count ? teacherStudents.reduce((sum, item) => sum + item.progress, 0) / count : 0;
+  const avgAccuracy = count ? teacherStudents.reduce((sum, item) => sum + item.accuracy, 0) / count : 0;
+  const riskCount = teacherStudents.filter((item) => item.risk === "需关注").length;
+
+  teacherStudentCount.textContent = String(count);
+  teacherAvgProgress.textContent = percent(avgProgress);
+  teacherAvgAccuracy.textContent = percent(avgAccuracy);
+  teacherRiskCount.textContent = String(riskCount);
+}
+
+function renderTeacherStudentDetail() {
+  const student = teacherStudents.find((item) => item.id === activeTeacherStudentId) || teacherStudents[0];
+  if (!student) return;
+
+  teacherStudentName.textContent = student.name;
+  teacherStudentSummary.textContent = student.summary;
+  teacherStudentTags.innerHTML = student.tags.map((tag) => `<span class="chip">${tag}</span>`).join("");
+  teacherStudentDetail.innerHTML = `
+    <div class="score-pill">干预建议</div>
+    <p><strong>学习状态：</strong> ${student.className} / 进度 ${percent(student.progress)} / 正确率 ${percent(student.accuracy)} / 风险 ${student.risk}</p>
+    <p class="muted">${student.advice}</p>
+  `;
+}
+
+function renderTeacherStudents() {
+  renderTeacherOverview();
+  teacherStudentTable.innerHTML = teacherStudents.map((student) => `
+    <button class="student-row ${student.id === activeTeacherStudentId ? "active" : ""}" data-teacher-student-id="${student.id}">
+      <strong>${student.name}</strong>
+      <span>${student.className}</span>
+      <span>${percent(student.progress)}</span>
+      <span>${percent(student.accuracy)}</span>
+      <span>${student.risk}</span>
+    </button>
+  `).join("");
+
+  document.querySelectorAll("[data-teacher-student-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeTeacherStudentId = button.dataset.teacherStudentId;
+      renderTeacherStudents();
+    });
+  });
+
+  renderTeacherStudentDetail();
+  teacherReportList.innerHTML = teacherReports.map((report) => `
+    <div><strong>${report.studentName}</strong><span>${report.status}</span></div>
+  `).join("");
+}
+
+async function syncTeacherDataFromBackend() {
+  syncTeacherDbButton.textContent = "同步中...";
+  try {
+    const [studentsResponse, reportsResponse] = await Promise.all([
+      fetch("http://127.0.0.1:8000/api/teacher/courses/course-circuit/students"),
+      fetch("http://127.0.0.1:8000/api/teacher/courses/course-circuit/reports")
+    ]);
+
+    if (!studentsResponse.ok) throw new Error("学生接口未返回成功状态");
+
+    const students = await studentsResponse.json();
+    const reports = reportsResponse.ok ? await reportsResponse.json() : [];
+    teacherStudents = students.map((item) => ({
+      id: `student-${item.student_id}`,
+      name: item.display_name,
+      className: item.class_name,
+      progress: item.progress,
+      accuracy: item.accuracy,
+      activity: item.activity_level,
+      risk: item.risk_level,
+      tags: [item.profile?.foundation, item.profile?.learning_style, item.profile?.answer_tone].filter(Boolean),
+      summary: item.profile?.long_term_summary || "暂无长期画像摘要。",
+      advice: item.profile?.weak_points ? `重点关注：${item.profile.weak_points}。常错类型：${item.profile.common_mistakes}` : "暂无干预建议。"
+    }));
+    teacherReports = reports.map((item) => ({
+      studentName: item.student_name,
+      status: `AI 初评 ${item.ai_score}，${item.status}`
+    }));
+    activeTeacherStudentId = teacherStudents[0]?.id || activeTeacherStudentId;
+    renderTeacherStudents();
+    syncTeacherDbButton.textContent = "已同步 PostgreSQL";
+  } catch (error) {
+    syncTeacherDbButton.textContent = "同步失败，使用本地演示数据";
+    teacherStudentDetail.innerHTML = `
+      <div class="score-pill">数据库未连接</div>
+      <p class="muted">请先启动后端和 PostgreSQL。当前页面继续展示本地演示数据。</p>
+    `;
+  }
 }
 
 function renderReportTemplates() {
@@ -1496,6 +1645,7 @@ deleteSelectedButton.addEventListener("click", deleteSelectedComponent);
 clearDiagramButton.addEventListener("click", clearDiagram);
 downloadSvgButton.addEventListener("click", downloadSvg);
 downloadPngButton.addEventListener("click", downloadPng);
+syncTeacherDbButton?.addEventListener("click", syncTeacherDataFromBackend);
 
 saveAdminConfigButton?.addEventListener("click", () => {
   const keywordWeight = Number(adminKeywordWeight.value || 0);
@@ -1526,6 +1676,7 @@ circuitCanvas.addEventListener("click", () => {
 initializeCircuitDemo();
 updateModeIndicator();
 updateProfileView();
+renderTeacherStudents();
 updateReportTemplateView();
 updateRole("student");
 renderStudyTimer();

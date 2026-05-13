@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduSpark 正式前端</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-card">
+          <span class="brand-mark">ES</span>
+          <div>
+            <h1>EduSpark</h1>
+            <p>课程管理 + AI 教师 Agent</p>
+          </div>
+        </div>
+
+        <section class="login-card">
+          <p class="eyebrow">Identity</p>
+          <h2 id="role-title">学生端</h2>
+          <div class="role-switch">
+            <button class="role-tab active" data-role="student">学生</button>
+            <button class="role-tab" data-role="teacher">教师</button>
+            <button class="role-tab" data-role="admin">管理员</button>
+          </div>
+          <label>账号</label>
+          <input id="account-input" value="student001" />
+          <label>密码</label>
+          <input id="password-input" type="password" value="demo123456" />
+          <button class="primary-btn" id="login-btn">进入系统</button>
+          <p class="muted" id="login-hint">正式版后续接 JWT / Session / RBAC。</p>
+        </section>
+
+        <nav id="main-nav" class="main-nav"></nav>
+      </aside>
+
+      <main class="content">
+        <section class="hero-card">
+          <div>
+            <p class="eyebrow">Formal Workspace</p>
+            <h2 id="workspace-title">学生学习空间</h2>
+            <p id="workspace-desc">围绕课程章节、AI 教师、随机出题、工程报告和学习画像展开。</p>
+          </div>
+          <div class="status-pill" id="api-status">后端检测中</div>
+        </section>
+
+        <section id="student-dashboard" class="panel active" data-role-panel="student">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Student</p>
+              <h3>学生端工作台</h3>
+            </div>
+            <button class="primary-btn" id="load-student-btn">加载课程</button>
+          </div>
+          <div class="grid three">
+            <article class="metric-card">
+              <span>当前课程</span>
+              <strong id="student-course-count">1</strong>
+              <p>电路电子技术基础</p>
+            </article>
+            <article class="metric-card">
+              <span>今日学习</span>
+              <strong>00:24</strong>
+              <p>后续接学习计时表</p>
+            </article>
+            <article class="metric-card">
+              <span>画像状态</span>
+              <strong>已生成</strong>
+              <p>首次问卷 + 学习行为持续更新</p>
+            </article>
+          </div>
+          <div class="grid two">
+            <article class="card">
+              <h4>课程与章节</h4>
+              <div id="student-course-list" class="list-stack"></div>
+            </article>
+            <article class="card">
+              <h4>学习入口</h4>
+              <ul class="feature-list">
+                <li>章节学习：按课程章节进入学习，记录正计时和进度。</li>
+                <li>随机出题：基于当前章节题库和 RAG 召回生成练习。</li>
+                <li>工程报告：提交项目化成果，AI 初评后教师复核。</li>
+                <li>电路绘图：后续接 IEC 标准元件库与连通性检查。</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="student-ai" class="panel" data-role-panel="student">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">AI Teacher</p>
+              <h3>AI 教师问答</h3>
+            </div>
+          </div>
+          <div class="grid two">
+            <article class="card chat-card">
+              <div id="chat-box" class="chat-box">
+                <div class="message teacher">我是电路电子课程 AI 教师。你可以问我章节知识、题目思路或报告写法。</div>
+              </div>
+              <div class="input-row">
+                <input id="student-question" placeholder="例如：你是谁？限流电阻怎么计算？" />
+                <button class="primary-btn" id="ask-ai-btn">提问</button>
+              </div>
+            </article>
+            <article class="card">
+              <h4>Agent 工作流</h4>
+              <ul class="feature-list">
+                <li>先判断意图：答疑、出题、评分、报告建议或学习规划。</li>
+                <li>再调用工具：课程知识库、题库、评分规则、学生画像。</li>
+                <li>最后生成个性化反馈：不同学生获得不同讲解风格。</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="student-quiz" class="panel" data-role-panel="student">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Practice</p>
+              <h3>章节随机出题与 AI 评分</h3>
+            </div>
+            <button class="primary-btn" id="generate-quiz-btn">随机出题</button>
+          </div>
+          <div class="grid two">
+            <article class="card">
+              <h4>题目</h4>
+              <div id="quiz-list" class="list-stack"></div>
+            </article>
+            <article class="card">
+              <h4>主观题作答</h4>
+              <textarea id="quiz-answer">栈是后进先出，队列是先进先出。括号匹配适合用栈，广度优先搜索适合用队列。</textarea>
+              <button class="primary-btn" id="score-quiz-btn">AI 评分</button>
+              <div id="score-result" class="result-box">等待评分。</div>
+            </article>
+          </div>
+        </section>
+
+        <section id="student-report" class="panel" data-role-panel="student">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Report</p>
+              <h3>工程报告提交</h3>
+            </div>
+          </div>
+          <div class="card">
+            <label>报告标题</label>
+            <input value="LED 驱动电路优化技术备忘录" />
+            <label>报告正文</label>
+            <textarea>项目背景：控制柜 LED 指示灯存在频闪和发热问题。参数校核：根据电源电压、LED 正向压降和目标电流计算限流电阻。</textarea>
+            <div class="button-row">
+              <button class="secondary-btn">保存草稿</button>
+              <button class="primary-btn">提交报告</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="teacher-students" class="panel" data-role-panel="teacher">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Teacher</p>
+              <h3>学生管理</h3>
+            </div>
+            <button class="primary-btn" id="load-teacher-btn">同步 PostgreSQL</button>
+          </div>
+          <div class="grid four">
+            <article class="metric-card"><span>学生数</span><strong id="teacher-count">-</strong><p>当前课程</p></article>
+            <article class="metric-card"><span>平均进度</span><strong id="teacher-progress">-</strong><p>章节完成率</p></article>
+            <article class="metric-card"><span>平均正确率</span><strong id="teacher-accuracy">-</strong><p>练习表现</p></article>
+            <article class="metric-card"><span>需关注</span><strong id="teacher-risk">-</strong><p>风险学生</p></article>
+          </div>
+          <div class="grid two">
+            <article class="card">
+              <h4>班级学生</h4>
+              <div id="teacher-student-list" class="table-list"></div>
+            </article>
+            <article class="card">
+              <h4>学生画像与干预建议</h4>
+              <div id="teacher-profile-detail" class="result-box">请选择学生。</div>
+            </article>
+          </div>
+        </section>
+
+        <section id="teacher-reports" class="panel" data-role-panel="teacher">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Review</p>
+              <h3>工程报告评阅</h3>
+            </div>
+            <button class="primary-btn" id="load-report-btn">加载报告</button>
+          </div>
+          <div class="card">
+            <div id="teacher-report-list" class="table-list"></div>
+          </div>
+        </section>
+
+        <section id="admin-permissions" class="panel" data-role-panel="admin">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Admin</p>
+              <h3>权限控制</h3>
+            </div>
+            <button class="primary-btn" id="load-permission-btn">加载权限</button>
+          </div>
+          <div class="grid two">
+            <article class="card">
+              <h4>三端功能隔离</h4>
+              <div id="permission-list" class="list-stack"></div>
+            </article>
+            <article class="card">
+              <h4>管理员职责</h4>
+              <ul class="feature-list">
+                <li>维护学生、教师、管理员角色。</li>
+                <li>管理课程范围、班级范围和功能权限。</li>
+                <li>审计 RAG、模型、权限等高风险配置变更。</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="admin-rag" class="panel" data-role-panel="admin">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">RAG</p>
+              <h3>RAG 数据库调节</h3>
+            </div>
+            <button class="primary-btn" id="load-rag-btn">读取配置</button>
+          </div>
+          <div class="grid two">
+            <article class="card form-card">
+              <label>知识库集合</label>
+              <input id="rag-collection" />
+              <label>Top K</label>
+              <input id="rag-top-k" type="number" min="1" max="30" />
+              <label>精准检索权重</label>
+              <input id="rag-keyword-weight" type="number" min="0" max="1" step="0.1" />
+              <label>向量检索权重</label>
+              <input id="rag-vector-weight" type="number" min="0" max="1" step="0.1" />
+              <label>重排序策略</label>
+              <input id="rag-rerank" />
+              <label>切片大小</label>
+              <input id="rag-chunk-size" type="number" />
+              <label>切片重叠</label>
+              <input id="rag-chunk-overlap" type="number" />
+              <button class="primary-btn" id="save-rag-btn">保存 RAG 配置</button>
+            </article>
+            <article class="card">
+              <h4>配置说明</h4>
+              <div id="rag-preview" class="result-box">等待读取 PostgreSQL 中的 RAG 配置。</div>
+            </article>
+          </div>
+        </section>
+
+        <section id="admin-system" class="panel" data-role-panel="admin">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">System</p>
+              <h3>系统状态</h3>
+            </div>
+            <button class="primary-btn" id="check-db-btn">检查数据库</button>
+          </div>
+          <div class="grid three">
+            <article class="metric-card"><span>API</span><strong id="api-health">-</strong><p>FastAPI</p></article>
+            <article class="metric-card"><span>Database</span><strong id="db-health">-</strong><p>PostgreSQL</p></article>
+            <article class="metric-card"><span>Vector DB</span><strong>Qdrant</strong><p>后续接入</p></article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

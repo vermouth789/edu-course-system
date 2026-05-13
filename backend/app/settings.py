@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     jwt_expires_minutes: int = 1440
 
     database_url: str = "postgresql+psycopg://eduspark:eduspark@127.0.0.1:5432/eduspark"
+    sql_echo: bool = False
+    database_auto_init: bool = False
+    database_seed_demo_data: bool = False
     redis_url: str = "redis://127.0.0.1:6379/0"
 
     qdrant_url: str = "http://127.0.0.1:6333"

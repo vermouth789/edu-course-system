@@ -350,6 +350,10 @@ textarea {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.four-column {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .card {
   padding: 22px;
 }
@@ -652,6 +656,45 @@ textarea {
   color: var(--muted);
 }
 
+.stat-card strong {
+  display: block;
+  margin: 8px 0 4px;
+  font-size: 30px;
+}
+
+.student-table {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.student-row {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 0.7fr 0.7fr 0.7fr;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.66);
+  cursor: pointer;
+}
+
+.student-row.active,
+.student-row:hover {
+  border-color: rgba(200, 108, 50, 0.32);
+  transform: translateY(-1px);
+}
+
+.student-row strong,
+.student-row span {
+  font-size: 14px;
+}
+
+.teacher-detail-box {
+  margin-top: 16px;
+}
+
 .teacher-style-box,
 .report-box {
   margin-top: 12px;
@@ -802,8 +845,10 @@ textarea {
   .page-shell,
   .two-column,
   .three-column,
+  .four-column,
   .split-grid,
   .learning-detail-grid,
+  .student-row,
   .hero {
     grid-template-columns: 1fr;
     display: grid;
